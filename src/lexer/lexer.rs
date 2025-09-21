@@ -23,6 +23,15 @@ impl Lexer {
         self.read_position += 1;
     }
 
+    // Helper function to look at the next character
+    fn peek_char(&self) -> u8 {
+        if self.read_position >= self.input.len() {
+            0
+        } else {
+            self.input.as_bytes()[self.read_position]
+        }
+    }
+
     fn read_identifier(&mut self) -> String {
         let start = self.position;
 
@@ -48,10 +57,69 @@ impl Lexer {
         self.skip_whitespace();
 
         let tok = match self.ch {
-            b'=' => Token {
-                token_type: TokenType::ASSIGN,
-                literal: String::from("="),
-            },
+            b'=' => {
+                if self.peek_char() == b'=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::EQ,
+                        literal: format!("{}=", ch as char),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::ASSIGN,
+                        literal: String::from("="),
+                    }
+                }
+            }
+
+            b'!' => {
+                if self.peek_char() == b'=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::NEQ,
+                        literal: format!("{}=", ch as char),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::BANG,
+                        literal: String::from("!"),
+                    }
+                }
+            }
+
+            b'<' => {
+                if self.peek_char() == b'=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::LTE,
+                        literal: format!("{}=", ch as char),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::LT,
+                        literal: String::from("<"),
+                    }
+                }
+            }
+
+            b'>' => {
+                if self.peek_char() == b'=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::GTE,
+                        literal: format!("{}=", ch as char),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::GT,
+                        literal: String::from(">"),
+                    }
+                }
+            }
 
             b';' => Token {
                 token_type: TokenType::SEMICOLON,
@@ -86,6 +154,21 @@ impl Lexer {
             b'+' => Token {
                 token_type: TokenType::PLUS,
                 literal: String::from("+"),
+            },
+
+            b'-' => Token {
+                token_type: TokenType::MINUS,
+                literal: String::from("-"),
+            },
+
+            b'*' => Token {
+                token_type: TokenType::ASTERISK,
+                literal: String::from("*"),
+            },
+
+            b'/' => Token {
+                token_type: TokenType::FORWARDSLASH,
+                literal: String::from("/"),
             },
 
             0 => Token {
