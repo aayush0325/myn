@@ -1,12 +1,6 @@
+use super::Lexer;
 use crate::token::{Token, TokenType};
 use crate::utils::*;
-
-pub struct Lexer {
-    input: String,
-    position: usize,
-    read_position: usize,
-    ch: u8,
-}
 
 impl Lexer {
     pub fn read_char(&mut self) {
